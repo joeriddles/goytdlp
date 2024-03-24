@@ -7,9 +7,8 @@
     html {
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
-
-    form div + div {
-      margin-top: 4px;
+    figure {
+      margin: 0px;
     }
   </style>
   <title>Youtube-to-MP3</title>
@@ -17,14 +16,12 @@
 <body>
   <h1>Youtube-to-MP3</h1>
 
-  <form method="post" action="/download/">
+  <figure>
     <div>
-      <label for="url">URL</label>
-      <input type="url" name="url" />
+      <figcaption>Listen <strong>{{.FileName}}</strong></figcaption>
+      <audio controls src="/media/{{.FileName}}/"></audio>
     </div>
-    <div>
-      <input type="submit" value="Download" />
-    </div>
-  </form>
+    <a href="/media/{{.FileName}}/" target="_blank">Download MP3 </a>
+  </figure>  
 </body>
 </html>
