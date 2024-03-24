@@ -3,3 +3,4 @@ fly.toml
 Makefile
 README.md
 .vscode
+run-app
