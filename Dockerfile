@@ -10,8 +10,8 @@ RUN go build -v -o /run-app .
 
 FROM debian:bookworm
 
-COPY --from=builder /run-app /usr/local/bin/
 RUN apt-get update -qq && apt-get install ffmpeg curl -y
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
   && chmod a+rx /usr/local/bin/yt-dlp
+COPY --from=builder /run-app /usr/local/bin/
 CMD ["run-app"]

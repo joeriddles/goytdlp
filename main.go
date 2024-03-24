@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"html/template"
@@ -15,22 +16,20 @@ import (
 	"github.com/wader/goutubedl"
 )
 
+//go:embed templates
+var templates embed.FS
+
 var indexTemplate *template.Template
 
 func main() {
 	http.HandleFunc("GET /{$}", index)
 	http.HandleFunc("POST /download", downloadVideo)
 
-	fp := path.Join("templates", "index.html")
-	var err error
-	indexTemplate, err = template.ParseFiles(fp)
-	if err != nil {
-		log.Fatal(err)
-	}
+	indexTemplate = template.Must(template.New("index.html").ParseFS(templates, "templates/index.html"))
 
 	addr := ":8080"
 	fmt.Printf("server starting on %v\n", addr)
-	err = http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, nil)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
 	} else if err != nil {
@@ -40,7 +39,10 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	indexTemplate.Execute(w, nil)
+	err := indexTemplate.Execute(w, nil)
+	if err != nil {
+		writeError(err, w)
+	}
 }
 
 func downloadVideo(w http.ResponseWriter, r *http.Request) {
