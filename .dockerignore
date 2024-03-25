@@ -4,4 +4,5 @@ Makefile
 README.md
 .vscode
 run-app
-*.mp3
+media/*
+!media/.gitkeep

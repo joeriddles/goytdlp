@@ -5,8 +5,17 @@
     <label for="url">YouTube URL</label>
     <input type="url" name="url" class="form-control" />
   </div>
-  <div>
+  <div class="mb-3">
     <input type="submit" value="Download" class="btn btn-primary" />
+  </div>
+  <div>
+    <ul class="text-start">
+      {{range $filename := .Filenames}}
+        <li>
+          <a href="/{{$filename}}/">{{$filename}}</a>
+        </li>
+      {{end}}
+    </ul>
   </div>
 </form>
 {{end}}

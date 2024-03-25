@@ -24,6 +24,10 @@ var templates embed.FS
 var indexTemplate *template.Template
 var downloadTemplate *template.Template
 
+type IndexTemplateData struct {
+	Filenames []string
+}
+
 type DownloadTemplateData struct {
 	FileName string
 	ImageUrl string
@@ -54,7 +58,22 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	err := indexTemplate.Execute(w, nil)
+	files, err := os.ReadDir("media")
+	if err != nil {
+		writeError(err, w)
+		return
+	}
+
+	mp3Filepaths := make([]string, 0)
+	for _, file := range files {
+		filename := file.Name()
+		if strings.HasSuffix(filename, ".mp3") {
+			mp3Filepaths = append(mp3Filepaths, filename)
+		}
+	}
+
+	data := &IndexTemplateData{Filenames: mp3Filepaths}
+	err = indexTemplate.Execute(w, data)
 	if err != nil {
 		writeError(err, w)
 	}

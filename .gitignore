@@ -1,3 +1,4 @@
 run-app
 media/**
 !media/.gitkeep
+__debug*
