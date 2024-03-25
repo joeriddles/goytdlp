@@ -9,7 +9,7 @@ go run main.go
 
 To build locally:
 ```shell
-go build -v -o /run-app .
+go build -v -o ./run-app .
 ```
 
 To build and run the Dockerfile:
