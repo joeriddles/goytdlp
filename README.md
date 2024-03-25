@@ -2,6 +2,8 @@
 
 A basic Go web app to convert YouTube videos into MP3 files.
 
+It uses Go wrappers around [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [ffmpeg](https://ffmpeg.org). 
+
 To run:
 ```shell
 go run main.go
