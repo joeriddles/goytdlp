@@ -19,3 +19,8 @@ To build and run the Dockerfile:
 docker build -t goytdlp:latest .
 docker run --rm -p '8080:8080' goytdlp:latest
 ```
+
+or with Docker Compose:
+```shell
+docker compose up --build
+```

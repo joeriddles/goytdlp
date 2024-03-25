@@ -1,0 +1,8 @@
+version: '2.4'
+services:
+  app:
+    container_name: app
+    build: ./
+    image: goytdlp:latest
+    ports:
+      - '8080:8080'
