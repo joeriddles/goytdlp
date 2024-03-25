@@ -1,10 +1,21 @@
 {{template "base" .}}
+
+{{define "title"}}Youtube-to-MP3 | {{.FileName}}{{end}}
+
+{{define "extra_heading"}}
+  <meta property="og:title" content="Youtube-to-MP3 | {{.FileName}}" />
+  <meta property="og:image" content="{{.ImageUrl}}" />
+{{end}}
+
 {{define "content"}}
 <figure>
   <div>
-    <figcaption>Listen <strong>{{.FileName}}</strong></figcaption>
+    <figcaption>Listen to <strong>{{.FileName}}</strong></figcaption>
     <audio controls src="/media/{{.FileName}}/"></audio>
   </div>
-  <a href="/media/{{.FileName}}/" target="_blank">Download MP3 </a>
+  <div class="mb-3">
+    <a href="/media/{{.FileName}}/" target="_blank">Download MP3 </a>
+  </div>
+  <img src="{{.ImageUrl}}" style="max-width: 100%;" />
 </figure> 
 {{end}}

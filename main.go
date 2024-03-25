@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"regexp"
+	"strings"
 
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wader/goutubedl"
@@ -24,6 +26,7 @@ var downloadTemplate *template.Template
 
 type DownloadTemplateData struct {
 	FileName string
+	ImageUrl string
 }
 
 func main() {
@@ -59,7 +62,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func viewMedia(w http.ResponseWriter, r *http.Request) {
 	filename := r.PathValue("filename")
-	data := &DownloadTemplateData{FileName: filename}
+	imageFilename := strings.Replace(filename, ".mp3", ".jpg", 1)
+	imageUrl := fmt.Sprintf("/media/%v/", imageFilename)
+	data := &DownloadTemplateData{FileName: filename, ImageUrl: imageUrl}
 	err := downloadTemplate.Execute(w, data)
 	if err != nil {
 		writeError(err, w)
@@ -75,8 +80,10 @@ func getMedia(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		return
 	}
-	w.Header().Set("Content-Type", "audio/mpeg")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\"", filename))
+	if strings.HasSuffix(filename, ".mp3") {
+		w.Header().Set("Content-Type", "audio/mpeg")
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\"", filename))
+	}
 	io.Copy(w, file)
 }
 
@@ -95,6 +102,7 @@ func downloadVideo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mp3FileName := metadata.Info.Title + ".mp3"
+	mp3FileName = clearString(mp3FileName)
 	mp3FilePath := path.Join("media", mp3FileName)
 	_, err = os.Stat(mp3FilePath)
 	if err != nil {
@@ -105,7 +113,36 @@ func downloadVideo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	_, err = downloadThumbnail(metadata, mp3FileName)
+	if err != nil {
+		writeError(err, w)
+		return
+	}
+
 	http.Redirect(w, r, fmt.Sprintf("/%v/", mp3FileName), http.StatusSeeOther)
+}
+
+func downloadThumbnail(metadata goutubedl.Result, mp3Filename string) (string, error) {
+	thumbnailUrl := metadata.Info.Thumbnail
+	mp3Name := mp3Filename[0:strings.LastIndex(mp3Filename, ".")]
+	// fileExtension := mp3Filename[strings.LastIndex(mp3Filename, ".")+1:]
+	filename := fmt.Sprintf("%v.%v", mp3Name, "jpg")
+	filepath := path.Join("media", filename)
+	out, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer out.Close()
+	resp, err := http.Get(thumbnailUrl)
+	if err != nil {
+		return "", nil
+	}
+	defer resp.Body.Close()
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return filepath, nil
 }
 
 func downloadAndConvertVideo(metadata goutubedl.Result, filename string) (*os.File, error) {
@@ -175,4 +212,10 @@ type printer struct{}
 func (printer) Print(v ...interface{}) {
 	fmt.Print(v...)
 	fmt.Println()
+}
+
+var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9-. ]+`)
+
+func clearString(str string) string {
+	return nonAlphanumericRegex.ReplaceAllString(str, "")
 }
