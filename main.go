@@ -32,8 +32,12 @@ func main() {
 	http.HandleFunc("GET /media/{filename}/{$}", getMedia)
 	http.HandleFunc("POST /download/{$}", downloadVideo)
 
-	indexTemplate = template.Must(template.New("index.html").ParseFS(templates, "templates/index.html"))
-	downloadTemplate = template.Must(template.New("download.html").ParseFS(templates, "templates/download.html"))
+	indexTemplate = template.Must(template.
+		New("index.html").
+		ParseFS(templates, "templates/base.html", "templates/index.html"))
+	downloadTemplate = template.Must(template.
+		New("download.html").
+		ParseFS(templates, "templates/base.html", "templates/download.html"))
 
 	addr := ":8080"
 	fmt.Printf("server starting on http://localhost%v\n", addr)

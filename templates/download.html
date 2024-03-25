@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    html {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    figure {
-      margin: 0px;
-    }
-  </style>
-  <title>Youtube-to-MP3</title>
-</head>
-<body>
-  <h1>Youtube-to-MP3</h1>
-
-  <figure>
-    <div>
-      <figcaption>Listen <strong>{{.FileName}}</strong></figcaption>
-      <audio controls src="/media/{{.FileName}}/"></audio>
-    </div>
-    <a href="/media/{{.FileName}}/" target="_blank">Download MP3 </a>
-  </figure>  
-</body>
-</html>
+{{template "base" .}}
+{{define "content"}}
+<figure>
+  <div>
+    <figcaption>Listen <strong>{{.FileName}}</strong></figcaption>
+    <audio controls src="/media/{{.FileName}}/"></audio>
+  </div>
+  <a href="/media/{{.FileName}}/" target="_blank">Download MP3 </a>
+</figure> 
+{{end}}
